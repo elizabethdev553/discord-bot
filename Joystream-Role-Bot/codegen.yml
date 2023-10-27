@@ -1,0 +1,45 @@
+# Run codegen using: npm run generate
+# Make sure schema endpoint is accessible!
+schema:
+  - https://query.joystream.org/graphql # Pioneer
+
+documents:
+  - >
+    fragment MemberFields on Membership {
+      handle
+      id    
+      isFoundingMember
+      isCouncilMember
+      rootAccount
+      roles {
+            status {
+              ... on WorkerStatusActive {
+                __typename
+              }
+              ... on WorkerStatusLeaving {
+                __typename
+              }
+              ... on WorkerStatusLeft {
+                __typename
+              }
+              ... on WorkerStatusTerminated {
+                __typename
+              }
+            }
+        groupId
+        isLead
+      }
+    }
+  - >
+    query getMembers {
+      memberships(limit:50000){
+        ...MemberFields
+      }
+    } 
+
+generates:
+  ./src/qntypes.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-graphql-request
